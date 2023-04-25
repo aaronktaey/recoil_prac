@@ -1,11 +1,19 @@
 import { useState } from 'react';
 import { RecoilRoot, atom, selector, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+const style ={
+  "display": "flex",
+  "flexFlow": "column wrap",
+  "justifyContent": "center",
+  "alignItems": "center",
+}
 function App() {
   return (
     <div className="App">
       <RecoilRoot>
+        <div style={style}>
         <CharacterCounter />
         <TodoList />
+        </div>
       </RecoilRoot>
     </div>
   );
@@ -62,13 +70,17 @@ const todoListState = atom({
 });
 
 function TodoList(){
-  const todoList = useRecoilValue(todoListState);
+  const todoList = useRecoilValue(filteredTodoListState);
   return(
     <>
+      <TodoListStats />
+      <TodoListFilters />
       <TodoItemCreator />
-      {todoList.map((todoItem) =>(
-        <TodoItem key={todoItem.id} item={todoItem} />
-      ))}
+      <div style={style}>
+        {todoList.map((todoItem) =>(
+          <TodoItem key={todoItem.id} item={todoItem} />
+        ))}
+      </div>
     </>
   );
 }
@@ -89,8 +101,8 @@ function TodoItemCreator() {
     setInputValue('');
   };
 
-  const onChange = (e) => {
-    setInputValue(e.target.value);
+  const onChange = ({target :{value}}) => {
+    setInputValue(value);
   };
 
   return (
@@ -110,10 +122,10 @@ function TodoItem({item}){
   const [todoList, setTodoList] = useRecoilState(todoListState);
   const index = todoList.findIndex((listItem) => listItem === item);
 
-  const editItemText = (e) =>{
+  const editItemText = ({target: {value}}) =>{
     const newList = replaceItemAtIndex(todoList, index, {
       ...item,
-      text: e.target.value,
+      text: value,
     });
 
     setTodoList(newList)
@@ -152,6 +164,83 @@ function removeItemAtIndex(arr, index){
   return [...arr.slice(0, index), ...arr.slice(index + 1)];
 }
 
+// TodoListFilter 추가
 
+const todoListFilterState = atom({
+  key: "TodoListFilter",
+  default: "Show All",
+});
+
+const filteredTodoListState = selector({
+  key: 'FilteredTodoList',
+  get: ({get}) => {
+    const filter = get(todoListFilterState);
+    const list = get(todoListState);
+
+    switch(filter){
+      case 'Show Completed':
+        return list.filter((item) => item.isComplete);
+      case 'Show Uncompleted':
+        return list.filter((item) => !item.isComplete);
+      default:
+        return list;
+    }
+  },
+});
+
+function TodoListFilters() {
+  const [filter, setFilter] = useRecoilState(todoListFilterState);
+
+  const updateFilter = ({target: {value}}) =>{
+    setFilter(value);
+  };
+  return(
+    <>
+      Filter:
+      <select value={filter} onChange={updateFilter}>
+        <option value="Show All">All</option>
+        <option value="Show Completed">Completed</option>
+        <option value="Show Uncompleted">Uncompleted</option>
+      </select>
+    </>
+  );
+}
+
+const todoListStatsState = selector({
+  key: 'TodoListStats',
+  get: ({get}) => {
+    const todoList = get(todoListState);
+    const totalNum = todoList.length;
+    const totalCompletedNum = todoList.filter((item) => item.isComplete).length;
+    const totalUncompletedNum = totalNum - totalCompletedNum;
+    const percentCompleted = totalNum === 0 ? 0 : totalCompletedNum / totalNum * 100;
+
+    return {
+      totalNum,
+      totalCompletedNum,
+      totalUncompletedNum,
+      percentCompleted,
+    };
+  },
+});
+
+function TodoListStats() {
+  const {
+    totalNum,
+    totalCompletedNum,
+    totalUncompletedNum,
+    percentCompleted,
+  } = useRecoilValue(todoListStatsState);
+
+  const formattedPercentComplete = Math.round(percentCompleted);
+  return(
+    <ul>
+      <li>Total items: {totalNum}</li>
+      <li>Items completed: {totalCompletedNum}</li>
+      <li>Items not completed: {totalUncompletedNum}</li>
+      <li>Percent completed: {formattedPercentComplete}</li>
+    </ul>
+  );
+}
 
 export default App;
