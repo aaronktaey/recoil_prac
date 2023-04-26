@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { RecoilRoot, atom, selector, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { RecoilRoot } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CharacterCounter from './components/Counter';
 import TodoList from './components/TodoList';

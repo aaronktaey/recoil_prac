@@ -1,9 +1,5 @@
-import { atom, selector, useRecoilState, useRecoilValue } from 'recoil'
-
-const textState = atom({
-    key: 'textState',
-    default: '',
-});
+import { textState } from '../Recoil/atoms'
+import { selector, useRecoilState, useRecoilValue } from 'recoil'
 
 function CharacterCounter(){
     return (
@@ -16,8 +12,8 @@ function CharacterCounter(){
 
   function TextInput(){
     const [ text, setText ] = useRecoilState(textState);
-    const onChange = (e) =>{
-      setText(e.target.value);
+    const onChange = ({target : {value}}) =>{
+      setText(value);
     }
   
     return (

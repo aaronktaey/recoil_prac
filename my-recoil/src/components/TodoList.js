@@ -1,5 +1,6 @@
-import { atom, selector, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { selector, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { useState } from 'react';
+import { todoListState, todoListFilterState } from '../Recoil/atoms'
 
 const style ={
     "display": "flex",
@@ -7,10 +8,6 @@ const style ={
     "alignItems": "center",
   }
   
-const todoListState = atom({
-    key: "TodoList",
-    default: [],
-  });
   
   function TodoList(){
     const todoList = useRecoilValue(filteredTodoListState);
@@ -106,11 +103,6 @@ const todoListState = atom({
   }
   
   // TodoListFilter 추가
-  
-  const todoListFilterState = atom({
-    key: "TodoListFilter",
-    default: "Show All",
-  });
   
   const filteredTodoListState = selector({
     key: 'FilteredTodoList',
