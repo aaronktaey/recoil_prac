@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { RecoilRoot } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CharacterCounter from './components/Counter';
 import TodoList from './components/TodoList';
 import Header from './components/Header';
+import Home from './components/Home';
 
 const style ={
   "display": "flex",
@@ -19,7 +19,8 @@ function App() {
           <BrowserRouter>
             <Header />
             <Routes>
-              <Route path="/" element={<TodoList />}></Route>
+              <Route path="/" element={<Home />}></Route>
+              <Route path="/home" element={<Home />}></Route>
               <Route path="/todolist" element={<TodoList />}></Route>
               <Route path="/counter" element={<CharacterCounter />}></Route>
               {/* 상단에 위치하는 라우트들의 규칙을 모두 확인, 일치하는 라우트가 없는경우 처리 */}
